@@ -1,5 +1,10 @@
 # AWS On WordPress
 
+## ステータス
+
+現在作成中
+あとはWordpressを自動インストールさせれば完成！
+
 ## 概要
 
 - AWS上にWordPressを構築
