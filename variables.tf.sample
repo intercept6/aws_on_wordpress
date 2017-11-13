@@ -1,0 +1,20 @@
+variable "images" {
+	default = {
+		#Amazon Linux Image
+		ap-northeast-1 = "ami-2803ac4e"
+	}
+}
+
+variable "myIP" {
+  default = {
+		ipv4 = "[YOUR_IPADDRESS(v4)]"
+		ipv6 = "[YOUR_IPADDRESS(v6)]"
+	}
+}
+
+variable "dns" {
+	default = {
+		domain = "[YOUR_DOMAIN]"
+		sub-domain = "[YOUR_SUBDOMAIN]"
+}
+}
