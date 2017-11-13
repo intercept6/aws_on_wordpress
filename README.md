@@ -9,7 +9,7 @@
 
 ## 構成
 
-![構成図](https://github.com/kmd2kmd/aws_on_wordpress/images.diagram.png)
+![構成図](https://raw.githubusercontent.com/kmd2kmd/aws_on_wordpress/master/images/diagram.png)
 
 ### 手順
 
