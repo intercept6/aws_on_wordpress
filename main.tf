@@ -237,7 +237,7 @@ resource "aws_instance" "wpInstance_c" {
 # DB Subnet Group
 resource "aws_db_subnet_group" "wpDbsubnetgroup" {
 	name = "wpdbsubnetgroup"
-	subnet_ids = ["${aws_subnet.wpSubnet_private-a.id}", "${aws_subnet.wpSubnet_private-c.id}"]
+	subnet_ids = ["${aws_subnet.wpSubnet_private_a.id}", "${aws_subnet.wpSubnet_private_c.id}"]
 	tags {
 		Name = "wpDbsubnetgroup"
 		Project = "wordpress"

@@ -1,17 +1,17 @@
-# Instance-a
+# Instance_a
 output "Instance-a Address" {
-	value = "${aws_instance.wpInstance-a.public_ip}"
+	value = "${aws_instance.wpInstance_a.public_ip}"
 }
-output "Instance-a IPv6 Address" {
-	value = "${aws_instance.wpInstance-a.ipv6_addresses}"
+output "Instance_a IPv6 Address" {
+	value = "${aws_instance.wpInstance_a.ipv6_addresses}"
 }
 
-# Instance-c
+# Instance_c
 output "Instance-c IPv4 Address" {
-	value = "${aws_instance.wpInstance-c.public_ip}"
+	value = "${aws_instance.wpInstance_c.public_ip}"
 }
-output "Instance-c IPv6 Address" {
-	value = "${aws_instance.wpInstance-c.ipv6_addresses}"
+output "Instance_c IPv6 Address" {
+	value = "${aws_instance.wpInstance_c.ipv6_addresses}"
 }
 
 # RDS Instance
