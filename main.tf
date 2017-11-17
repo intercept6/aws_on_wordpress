@@ -131,12 +131,12 @@ resource "aws_security_group" "wpSecurityGroup_public" {
 		protocol = "tcp"
 		ipv6_cidr_blocks = ["${var.myIP["ipv6"]}"]
 	}
-	ingress {
-		from_port = "443"
-		to_port = "443"
-		protocol = "tcp"
-		ipv6_cidr_blocks = ["${var.myIP["ipv6"]}"]
-	}
+#	ingress {
+#		from_port = "443"
+#		to_port = "443"
+#		protocol = "tcp"
+#		ipv6_cidr_blocks = ["${var.myIP["ipv6"]}"]
+#	}
 	egress {
 		from_port = 0
 		to_port = 0
@@ -272,7 +272,7 @@ data "aws_acm_certificate" "wpCertificatemanager" {
 	domain   = "*.arata-fun.net"
 }
 
-# ELB
+# ALB
 ## Load Balancer
 resource "aws_alb" "wpAlb" {
 	name = "wpAlb"
@@ -284,25 +284,40 @@ resource "aws_alb" "wpAlb" {
 	}
 }
 ## Target Group
-resource "aws_alb_target_group" "wpAlbtargetgroup" {
-	name = "wpAlbtargetgroup"
+resource "aws_alb_target_group" "wpAlbDefaultTargetGroup" {
+	name = "wpAlbDefaultTargetGroup"
 	port = "80"
 	protocol = "HTTP"
 	vpc_id = "${aws_vpc.wpVPC.id}"
 	tags {
-		Name = "wpAlbtargetgroup"
+		Name = "wpAlbDefaultTargetGroup"
+		Project = "wordpress"
+	}
+}
+resource "aws_alb_target_group" "wpAlbMasterTargetGroup" {
+	name = "wpAlbMasterTargetGroup"
+	port = "80"
+	protocol = "HTTP"
+	vpc_id = "${aws_vpc.wpVPC.id}"
+	tags {
+		Name = "wpAlbMasterTargetGroup"
 		Project = "wordpress"
 	}
 }
 ## Target Group Attachment
-resource "aws_alb_target_group_attachment" "wpAlbtargetgroupattachement_a" {
-	target_group_arn = "${aws_alb_target_group.wpAlbtargetgroup.arn}"
+resource "aws_alb_target_group_attachment" "wpAlbDefaultTargetGroupattachement_a" {
+	target_group_arn = "${aws_alb_target_group.wpAlbDefaultTargetGroup.arn}"
 	target_id = "${aws_instance.wpInstance_a.id}"
   port = "80"
 }
-resource "aws_alb_target_group_attachment" "wpAlbtargetgroupattachement_c" {
-	target_group_arn = "${aws_alb_target_group.wpAlbtargetgroup.arn}"
+resource "aws_alb_target_group_attachment" "wpAlbDefaultTargetGroupattachement_c" {
+	target_group_arn = "${aws_alb_target_group.wpAlbDefaultTargetGroup.arn}"
 	target_id = "${aws_instance.wpInstance_c.id}"
+  port = "80"
+}
+resource "aws_alb_target_group_attachment" "wpAlbMasterTargetGroupattachement_a" {
+	target_group_arn = "${aws_alb_target_group.wpAlbMasterTargetGroup.arn}"
+	target_id = "${aws_instance.wpInstance_a.id}"
   port = "80"
 }
 ## Listener
@@ -312,9 +327,57 @@ resource "aws_alb_listener" "wpAlbListener" {
 		protocol = "HTTPS"
 		certificate_arn = "${data.aws_acm_certificate.wpCertificatemanager.arn}"
 		default_action {
-			target_group_arn = "${aws_alb_target_group.wpAlbtargetgroup.arn}"
+			target_group_arn = "${aws_alb_target_group.wpAlbDefaultTargetGroup.arn}"
 			type = "forward"
 		}
+}
+resource "aws_alb_listener_rule" "wp-admin" {
+  listener_arn = "${aws_alb_listener.wpAlbListener.arn}"
+  priority     = 1
+  action {
+    type             = "forward"
+    target_group_arn = "${aws_alb_target_group.wpAlbMasterTargetGroup.arn}"
+  }
+  condition {
+    field  = "path-pattern"
+    values = ["/wp-admin/*"]
+  }
+}
+resource "aws_alb_listener_rule" "wp-admin-php" {
+  listener_arn = "${aws_alb_listener.wpAlbListener.arn}"
+  priority     = 2
+  action {
+    type             = "forward"
+    target_group_arn = "${aws_alb_target_group.wpAlbMasterTargetGroup.arn}"
+  }
+  condition {
+    field  = "path-pattern"
+    values = ["/wp-login.php"]
+  }
+}
+resource "aws_alb_listener_rule" "contents-wp-admin" {
+  listener_arn = "${aws_alb_listener.wpAlbListener.arn}"
+  priority     = 3
+  action {
+    type             = "forward"
+    target_group_arn = "${aws_alb_target_group.wpAlbMasterTargetGroup.arn}"
+  }
+  condition {
+    field  = "path-pattern"
+    values = ["/contents/wp-admin/*"]
+  }
+}
+resource "aws_alb_listener_rule" "contents-wp-admin-php" {
+  listener_arn = "${aws_alb_listener.wpAlbListener.arn}"
+  priority     = 4
+  action {
+    type             = "forward"
+    target_group_arn = "${aws_alb_target_group.wpAlbMasterTargetGroup.arn}"
+  }
+  condition {
+    field  = "path-pattern"
+    values = ["/contents/wp-login.php"]
+  }
 }
 
 # Route53
