@@ -7,7 +7,7 @@ provider "aws" {
 resource "aws_instance" "wpInstance_a" {
 	ami = "${var.images["ap-northeast-1"]}"
 	instance_type = "t2.nano"
-	key_name = "arata001"
+	key_name = "${var.key["name"]}"
 	user_data = "${file("userdata.sh")}"
 	vpc_security_group_ids = [
 		"${aws_security_group.wpSecurityGroup_public.id}"
@@ -28,7 +28,7 @@ resource "aws_instance" "wpInstance_a" {
 resource "aws_instance" "wpInstance_c" {
 	ami = "${var.images["ap-northeast-1"]}"
 	instance_type = "t2.nano"
-	key_name = "arata001"
+	key_name = "${var.key["name"]}"
 	user_data = "${file("userdata.sh")}"
 	vpc_security_group_ids = [
 		"${aws_security_group.wpSecurityGroup_public.id}"

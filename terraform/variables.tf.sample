@@ -18,3 +18,9 @@ variable "dns" {
 		sub-domain = "[YOUR_SUBDOMAIN]"
 }
 }
+
+variable "key" {
+  default = {
+		name = "[YOUR_KEYNAME]"
+	}
+}
